@@ -1,0 +1,17 @@
+<!doctype html>
+<html>
+  <body>
+    <h1>BOOK LIST PAGE ✅</h1>
+
+    <ul>
+      {% for b in books %}
+        <li>
+          <a href="{% url 'book_detail' b.id %}">{{ b.title }}</a>
+          {% if b.author %} — {{ b.author }}{% endif %}
+        </li>
+      {% empty %}
+        <li>No books yet.</li>
+      {% endfor %}
+    </ul>
+  </body>
+</html>
