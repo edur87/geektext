@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'api',
     'reviews',
     'books',
+    "shopping_cart",
     
 ]
 
