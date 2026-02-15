@@ -1,0 +1,122 @@
+[
+{
+  "model": "books.book",
+  "pk": 1,
+  "fields": {
+    "title": "Atomic Habits",
+    "author": "James Clear",
+    "description": "A practical guide to building good habits and breaking bad ones.",
+    "isbn": "9780735211292",
+    "published_year": 2018,
+    "created_at": "2026-02-12T01:46:00.176Z"
+  }
+},
+{
+  "model": "books.book",
+  "pk": 2,
+  "fields": {
+    "title": "Deep Work",
+    "author": "Cal Newport",
+    "description": "Rules for focused success in a distracted world.",
+    "isbn": "9781455586691",
+    "published_year": 2016,
+    "created_at": "2026-02-12T01:46:00.178Z"
+  }
+},
+{
+  "model": "books.book",
+  "pk": 3,
+  "fields": {
+    "title": "Clean Code",
+    "author": "Robert C. Martin",
+    "description": "A handbook of agile software craftsmanship.",
+    "isbn": "9780132350884",
+    "published_year": 2008,
+    "created_at": "2026-02-12T01:46:00.179Z"
+  }
+},
+{
+  "model": "books.book",
+  "pk": 4,
+  "fields": {
+    "title": "The Pragmatic Programmer",
+    "author": "Andrew Hunt & David Thomas",
+    "description": "Classic tips and practices for effective programming.",
+    "isbn": "9780201616224",
+    "published_year": 1999,
+    "created_at": "2026-02-12T01:46:00.180Z"
+  }
+},
+{
+  "model": "books.book",
+  "pk": 5,
+  "fields": {
+    "title": "Introduction to Algorithms",
+    "author": "Cormen, Leiserson, Rivest, Stein",
+    "description": "Comprehensive algorithms textbook (CLRS).",
+    "isbn": "9780262033848",
+    "published_year": 2009,
+    "created_at": "2026-02-12T01:46:00.181Z"
+  }
+},
+{
+  "model": "books.book",
+  "pk": 6,
+  "fields": {
+    "title": "Design Patterns",
+    "author": "Erich Gamma et al.",
+    "description": "Elements of reusable object-oriented software.",
+    "isbn": "9780201633610",
+    "published_year": 1994,
+    "created_at": "2026-02-12T01:46:00.182Z"
+  }
+},
+{
+  "model": "books.book",
+  "pk": 7,
+  "fields": {
+    "title": "The Phoenix Project",
+    "author": "Gene Kim, Kevin Behr, George Spafford",
+    "description": "A novel about DevOps and improving IT organizations.",
+    "isbn": "9780988262500",
+    "published_year": 2013,
+    "created_at": "2026-02-12T01:46:00.182Z"
+  }
+},
+{
+  "model": "books.book",
+  "pk": 8,
+  "fields": {
+    "title": "Thinking, Fast and Slow",
+    "author": "Daniel Kahneman",
+    "description": "How we think: two systems that drive our decisions.",
+    "isbn": "9780374533557",
+    "published_year": 2011,
+    "created_at": "2026-02-12T01:46:00.183Z"
+  }
+},
+{
+  "model": "books.book",
+  "pk": 9,
+  "fields": {
+    "title": "Sapiens",
+    "author": "Yuval Noah Harari",
+    "description": "A brief history of humankind.",
+    "isbn": "9780062316097",
+    "published_year": 2011,
+    "created_at": "2026-02-12T01:46:00.184Z"
+  }
+},
+{
+  "model": "books.book",
+  "pk": 10,
+  "fields": {
+    "title": "The Hobbit",
+    "author": "J.R.R. Tolkien",
+    "description": "A fantasy adventure preceding The Lord of the Rings.",
+    "isbn": "9780547928227",
+    "published_year": 1937,
+    "created_at": "2026-02-12T01:46:00.185Z"
+  }
+}
+]
