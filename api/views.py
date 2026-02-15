@@ -1,12 +1,71 @@
 from django.shortcuts import render
-
-# Create your views here.             
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
+from rest_framework import status
+from .models import User, CreditCard
+from .serializers import UserSerializer, UserCreateSerializer, UserUpdateSerializer, CreditCardSerializer
 
+# Health check endpoint
 @api_view(["GET"])
 def health(request):
     return Response({"status": "ok"})
+
+
+# Profile Management - User endpoints
+@api_view(["POST"])
+def create_user(request):
+    """Create a new user with username, password, and optional fields"""
+    serializer = UserCreateSerializer(data=request.data)
+    if serializer.is_valid():
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(["GET"])
+def get_user(request, username):
+    """Retrieve a user object by username"""
+    try:
+        user = User.objects.get(username=username)
+        serializer = UserSerializer(user)
+        return Response(serializer.data)
+    except User.DoesNotExist:
+        return Response({"error": "User not found"}, status=status.HTTP_404_NOT_FOUND)
+
+
+@api_view(["PUT", "PATCH"])
+def update_user(request, username):
+    """Update user fields (excluding email) by username"""
+    try:
+        user = User.objects.get(username=username)
+    except User.DoesNotExist:
+        return Response({"error": "User not found"}, status=status.HTTP_404_NOT_FOUND)
+    
+    partial = request.method == 'PATCH'
+    serializer = UserUpdateSerializer(user, data=request.data, partial=partial)
+    if serializer.is_valid():
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+# Profile Management - Credit Card endpoints
+@api_view(["POST"])
+def create_credit_card(request, username):
+    """Create a credit card for a specific user"""
+    try:
+        user = User.objects.get(username=username)
+    except User.DoesNotExist:
+        return Response({"error": "User not found"}, status=status.HTTP_404_NOT_FOUND)
+    
+    data = request.data.copy()
+    data['user'] = user.id
+    
+    serializer = CreditCardSerializer(data=data)
+    if serializer.is_valid():
+        serializer.save(user=user)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 
