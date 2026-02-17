@@ -83,11 +83,14 @@ WSGI_APPLICATION = 'config.wsgi.application'
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql",
-        "NAME": "geektext",
-        "USER": "geekuser",
-        "PASSWORD": "geekpass",
-        "HOST": "127.0.0.1",
+        "NAME": "neondb",
+        "USER": "neondb_owner",
+        "PASSWORD": "npg_KUD5QP1gtpNx",
+        "HOST": "ep-aged-lake-aihl7q55-pooler.c-4.us-east-1.aws.neon.tech",
         "PORT": "5432",
+        "OPTIONS": {
+            "sslmode": "require",
+        }
     }
 }
 

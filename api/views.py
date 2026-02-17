@@ -49,8 +49,38 @@ def update_user(request, username):
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-# Profile Management - Credit Card endpoints
-@api_view(["POST"])
+# profile management system for user login
+@api_view (["POST"])
+def login_user (request):
+    """Login user with username and password, returns user details and credit cards if credentials are valid"""
+    username = request.data.get ('username')
+    password = request.data.get ('password')
+    
+    if not username or not password:
+        return Response ({"error": "Username and password are required"}, status=status.HTTP_400_BAD_REQUEST)
+    
+    try:
+        user = User.objects.get (username=username)
+    except User.DoesNotExist:
+        return Response ({"error": "Invalid username or password"}, status=status.HTTP_401_UNAUTHORIZED)
+    
+    # check if password is correct
+    if not user.check_password (password):
+        return Response ({"error": "Invalid username or password"}, status=status.HTTP_401_UNAUTHORIZED)
+    
+    # return user details with credit cards
+    user_serializer = UserSerializer(user)
+    credit_cards = CreditCard.objects.filter(user=user)
+    cards_serializer = CreditCardSerializer(credit_cards, many=True)
+    
+    return Response ({
+        "user": user_serializer.data,
+        "credit_cards": cards_serializer.data
+    }, status=status.HTTP_200_OK)
+
+
+# profile management: credit card
+@api_view (["POST"])
 def create_credit_card(request, username):
     """Create a credit card for a specific user"""
     try:
