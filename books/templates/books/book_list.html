@@ -1,17 +1,181 @@
 <!doctype html>
 <html>
-  <body>
-    <h1>BOOK LIST PAGE ✅</h1>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{% if page_title %}{{ page_title }}{% else %}Book List{% endif %}</title>
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Manrope:wght@400;500;700&display=swap');
 
-    <ul>
+      :root {
+        --bg-a: #f7efe6;
+        --bg-b: #e8f2f6;
+        --surface: rgba(255, 255, 255, 0.86);
+        --ink: #1f2937;
+        --muted: #5b6470;
+        --line: #cfd8df;
+        --accent: #0f766e;
+        --accent-soft: #daf4ef;
+      }
+
+      * { box-sizing: border-box; }
+
+      body {
+        margin: 0;
+        font-family: Manrope, "Segoe UI", sans-serif;
+        color: var(--ink);
+        background: radial-gradient(120% 130% at 0% 0%, var(--bg-a), var(--bg-b));
+        min-height: 100vh;
+      }
+
+      .shell {
+        max-width: 960px;
+        margin: 0 auto;
+        padding: 28px 16px 48px;
+      }
+
+      .panel {
+        background: var(--surface);
+        border: 1px solid var(--line);
+        border-radius: 18px;
+        backdrop-filter: blur(6px);
+        box-shadow: 0 18px 40px rgba(31, 41, 55, 0.08);
+        overflow: hidden;
+      }
+
+      .titlebar {
+        padding: 22px 24px 16px;
+        border-bottom: 1px solid var(--line);
+      }
+
+      h1 {
+        margin: 0;
+        font: 700 1.8rem/1.15 Fraunces, Georgia, serif;
+        letter-spacing: 0.2px;
+      }
+
+      .subtitle {
+        margin: 8px 0 0;
+        color: var(--muted);
+        font-size: 0.96rem;
+      }
+
+      .book-list {
+        margin: 0;
+        padding: 8px 14px 14px;
+        list-style: none;
+      }
+
+      .book-item {
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        margin: 12px 0;
+        background: #fff;
+        transition: transform 170ms ease, box-shadow 170ms ease, border-color 170ms ease;
+      }
+
+      .book-item:hover {
+        transform: translateY(-2px);
+        border-color: #b4c4d0;
+        box-shadow: 0 10px 24px rgba(15, 23, 42, 0.1);
+      }
+
+      .book-link {
+        display: block;
+        text-decoration: none;
+        color: inherit;
+        padding: 16px 16px 14px;
+      }
+
+      .book-main {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 10px;
+      }
+
+      .book-title {
+        margin: 0;
+        font: 700 1.15rem/1.25 Fraunces, Georgia, serif;
+      }
+
+      .book-author {
+        color: var(--muted);
+        font-weight: 500;
+        margin-top: 4px;
+      }
+
+      .book-meta {
+        margin-top: 10px;
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+      }
+
+      .chip {
+        font-size: 0.78rem;
+        font-weight: 700;
+        color: #0a4a45;
+        background: var(--accent-soft);
+        border: 1px solid #b7e2d9;
+        border-radius: 999px;
+        padding: 5px 10px;
+      }
+
+      .arrow {
+        color: var(--accent);
+        font-size: 1.2rem;
+        line-height: 1;
+        margin-top: 3px;
+      }
+
+      .empty {
+        margin: 16px;
+        border: 1px dashed var(--line);
+        border-radius: 12px;
+        background: #fff;
+        padding: 20px;
+        color: var(--muted);
+        text-align: center;
+      }
+
+      @media (max-width: 620px) {
+        .book-main { gap: 4px; }
+        h1 { font-size: 1.45rem; }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="shell">
+      <section class="panel">
+        <header class="titlebar">
+          <h1>{% if page_title %}{{ page_title }}{% else %}Book Details{% endif %}</h1>
+          <p class="subtitle">See detailed information about each book.</p>
+        </header>
+
+        <ul class="book-list">
       {% for b in books %}
-        <li>
-          <a href="{% url 'book_detail' b.id %}">{{ b.title }}</a>
-          {% if b.author %} — {{ b.author }}{% endif %}
+        <li class="book-item">
+          <a class="book-link" href="{% url 'book_detail' b.id %}">
+            <div class="book-main">
+              <div>
+                <p class="book-title">{{ b.title }}</p>
+                {% if b.author %}<p class="book-author">{{ b.author }}</p>{% endif %}
+                <div class="book-meta">
+                  {% if b.genre %}<span class="chip">{{ b.genre }}</span>{% endif %}
+                  {% if b.published_year %}<span class="chip">{{ b.published_year }}</span>{% endif %}
+                  {% if b.rating %}<span class="chip">Rating {{ b.rating }}</span>{% endif %}
+                </div>
+              </div>
+              <span class="arrow">&rsaquo;</span>
+            </div>
+          </a>
         </li>
       {% empty %}
-        <li>No books yet.</li>
+        <li class="empty">No books yet.</li>
       {% endfor %}
-    </ul>
+        </ul>
+      </section>
+    </main>
   </body>
 </html>
