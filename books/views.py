@@ -1,6 +1,11 @@
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, render
-from .models import Book
+from rest_framework import status, viewsets
+from rest_framework.decorators import action
+from rest_framework.response import Response
+from rest_framework.views import APIView
+from .models import Author, Book
+from .serializers import AuthorSerializer, BookSerializer
 
 
 def _wants_json(request):
@@ -86,7 +91,7 @@ def top_sellers(request):
                 "page_title": "Top Sellers",
             },
         )
-    
+
     book_data = []
     for book in books:
         book_data.append({
@@ -102,3 +107,79 @@ def top_sellers(request):
         })
 
     return JsonResponse(book_data, safe=False)
+
+
+# REST API Endpoints
+
+class BookCreateListView(APIView):
+    """
+    POST: Create a new book
+    GET: List all books or filter by author
+    """
+    
+    def post(self, request):
+        serializer = BookSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+    def get(self, request):
+        # List all books with optional filters
+        books = Book.objects.all()
+        
+        # Filter by author_id
+        author_id = request.query_params.get('author_id')
+        if author_id:
+            books = books.filter(author_id=author_id)
+        
+        serializer = BookSerializer(books, many=True)
+        return Response(serializer.data)
+
+
+class BookRetrieveView(APIView):
+    """
+    GET: Retrieve a book by ID or ISBN
+    """
+    
+    def get(self, request, pk):
+        # Try to find by ID first, then by ISBN
+        book = None
+        try:
+            book = Book.objects.get(pk=pk)
+        except Book.DoesNotExist:
+            book = get_object_or_404(Book, isbn=pk)
+        
+        serializer = BookSerializer(book)
+        return Response(serializer.data)
+
+
+class AuthorCreateListView(APIView):
+    """
+    POST: Create a new author
+    GET: List all authors
+    """
+    
+    def post(self, request):
+        serializer = AuthorSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+    def get(self, request):
+        authors = Author.objects.all()
+        serializer = AuthorSerializer(authors, many=True)
+        return Response(serializer.data)
+
+
+class AuthorBooksView(APIView):
+    """
+    GET: Retrieve all books by a specific author
+    """
+    
+    def get(self, request, pk):
+        author = get_object_or_404(Author, pk=pk)
+        books = author.books.all()
+        serializer = BookSerializer(books, many=True)
+        return Response(serializer.data)

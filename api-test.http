@@ -1,0 +1,137 @@
+### GeekText API Tests
+
+@baseUrl = http://127.0.0.1:8000
+
+### 1 create an author
+
+POST {{baseUrl}}/api/authors/
+Content-Type: application/json
+
+{
+  "first_name": "J.K.",
+  "last_name": "Rowling",
+  "biography": "British author of the Harry Potter series",
+  "publisher": "Bloomsbury"
+}
+
+###
+
+
+POST {{baseUrl}}/api/authors/
+Content-Type: application/json
+
+{
+  "first_name": "George R.R.",
+  "last_name": "Martin",
+  "biography": "American novelist known for A Song of Ice and Fire",
+  "publisher": "Bantam Books"
+}
+
+### 2. get all authors
+
+GET {{baseUrl}}/api/authors/
+
+###
+
+### 3. create a book
+POST {{baseUrl}}/api/books/
+Content-Type: application/json
+
+{
+  "title": "Harry Potter and the Philosopher's Stone",
+  "author": 5,
+  "description": "A young wizard discovers his magical heritage at Hogwarts School of Witchcraft and Wizardry",
+  "isbn": "978-0439708180",
+  "published_year": 1997,
+  "price": "15.99",
+  "publisher": "Bloomsbury",
+  "genre": "Fantasy",
+  "copies_sold": 120000000,
+  "rating": "4.95"
+}
+
+###
+
+### 4. another book by the same author
+POST {{baseUrl}}/api/books/
+Content-Type: application/json
+
+{
+  "title": "Harry Potter and the Chamber of Secrets",
+  "author": 5,
+  "description": "Harry's second year at Hogwarts brings new mysteries and dangers",
+  "isbn": "978-0439064873",
+  "published_year": 1998,
+  "price": "16.99",
+  "publisher": "Bloomsbury",
+  "genre": "Fantasy",
+  "copies_sold": 77000000,
+  "rating": "4.89"
+}
+
+###
+
+### 5. book by the second author
+POST {{baseUrl}}/api/books/
+Content-Type: application/json
+
+{
+  "title": "A Game of Thrones",
+  "author": 6,
+  "description": "The beginning of an epic tale of power, ambition, and survival",
+  "isbn": "978-0553103540",
+  "published_year": 1996,
+  "price": "18.99",
+  "publisher": "Bantam Books",
+  "genre": "Fantasy",
+  "copies_sold": 90000000,
+  "rating": "4.87"
+}
+
+###
+
+### 6. get book by id
+GET {{baseUrl}}/api/books/1/
+
+###
+
+### 7. get book by ISBN
+GET {{baseUrl}}/api/books/978-0439708180/
+
+###
+
+### 8. get book by same author
+GET {{baseUrl}}/api/authors/1/books/
+
+###
+
+### 9. get book by same author
+GET {{baseUrl}}/api/authors/2/books/
+
+###
+
+### 10. get all books
+GET {{baseUrl}}/api/books/
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+###
+
+### 12. GET BOOK DETAIL (HTML VIEW)
+GET {{baseUrl}}/books/1/
+
+###
+
+### 13. GET BOOK LIST (HTML VIEW)
+GET {{baseUrl}}/books/
