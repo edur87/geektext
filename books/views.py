@@ -16,6 +16,11 @@ def book_list(request):
     if genre:
         books = books.filter(genre__iexact=genre)
 
+    # Filter by rating (Sprint 4)
+    rating = request.GET.get('rating')
+    if rating:
+        books = books.filter(rating__gte=rating)
+
     book_data = []
     for book in books:
         book_data.append({
