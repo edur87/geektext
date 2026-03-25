@@ -4,15 +4,16 @@ from rest_framework.response import Response
 from rest_framework import status
 from django.shortcuts import get_object_or_404
 
-from .models import Comment
+from .models import Comment, Review
+from .serializers import ReviewSerializer
 from books.models import Book
+
 
 @api_view(["GET", "POST"])
 @permission_classes([IsAuthenticated])
 def api_add_comment(request, book_id):
     book = get_object_or_404(Book, id=book_id)
 
-    # ✅ GET: list comments for this book
     if request.method == "GET":
         qs = (
             Comment.objects
@@ -33,10 +34,12 @@ def api_add_comment(request, book_id):
         ]
         return Response(data, status=status.HTTP_200_OK)
 
-    # ✅ POST: create comment (your existing logic)
     text = (request.data.get("comment") or "").strip()
     if not text:
-        return Response({"error": "comment is required"}, status=status.HTTP_400_BAD_REQUEST)
+        return Response(
+            {"error": "comment is required"},
+            status=status.HTTP_400_BAD_REQUEST
+        )
 
     c = Comment.objects.create(book=book, user=request.user, comment=text)
     return Response(
@@ -50,3 +53,21 @@ def api_add_comment(request, book_id):
         },
         status=status.HTTP_201_CREATED,
     )
+
+
+@api_view(["POST"])
+@permission_classes([IsAuthenticated])
+def create_review(request):
+    serializer = ReviewSerializer(data=request.data, context={"request": request})
+
+    if serializer.is_valid():
+        serializer.save(user=request.user)
+        return Response(
+            {
+                "message": "Review created successfully.",
+                "data": serializer.data
+            },
+            status=status.HTTP_201_CREATED
+        )
+
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
