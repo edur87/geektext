@@ -34,6 +34,31 @@ class CreditCard(models.Model):
     
     class Meta:
         ordering = ['-created_at']
+
+    @property
+    def masked_card_number(self):
+        last4 = self.card_number[-4:] if self.card_number else ""
+        return f"**** **** **** {last4}"
+
+    def save(self, *args, **kwargs):
+        is_new = self.pk is None
+        super().save(*args, **kwargs)
+
+        should_be_default = self.is_default or not CreditCard.objects.filter(
+            user=self.user,
+            is_default=True,
+        ).exclude(pk=self.pk).exists() and not CreditCard.objects.filter(
+            user=self.user,
+            is_default=True,
+            pk=self.pk,
+        ).exists()
+
+        if should_be_default and not self.is_default:
+            CreditCard.objects.filter(pk=self.pk).update(is_default=True)
+            self.is_default = True
+
+        if self.is_default:
+            CreditCard.objects.filter(user=self.user).exclude(pk=self.pk).update(is_default=False)
     
     def __str__(self):
         return f"{self.cardholder_name} - {self.card_number[-4:]}"

@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.contrib.auth import authenticate
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
@@ -12,13 +12,23 @@ def health(request):
 
 
 # Profile Management - User endpoints
-@api_view(["POST"])
+@api_view(["GET", "POST"])
 def create_user(request):
     """Create a new user with username, password, and optional fields"""
+    if request.method == "GET":
+        return Response(
+            {
+                "message": "Profile management users endpoint",
+                "supported_methods": ["GET", "POST"],
+                "create_user_fields": ["username", "password", "email", "name", "home_address"],
+            },
+            status=status.HTTP_200_OK,
+        )
+
     serializer = UserCreateSerializer(data=request.data)
     if serializer.is_valid():
-        serializer.save()
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
+        user = serializer.save()
+        return Response(UserSerializer(user).data, status=status.HTTP_201_CREATED)
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
@@ -59,13 +69,8 @@ def login_user (request):
     if not username or not password:
         return Response ({"error": "Username and password are required"}, status=status.HTTP_400_BAD_REQUEST)
     
-    try:
-        user = User.objects.get (username=username)
-    except User.DoesNotExist:
-        return Response ({"error": "Invalid username or password"}, status=status.HTTP_401_UNAUTHORIZED)
-    
-    # check if password is correct
-    if not user.check_password (password):
+    user = authenticate(request, username=username, password=password)
+    if user is None:
         return Response ({"error": "Invalid username or password"}, status=status.HTTP_401_UNAUTHORIZED)
     
     # return user details with credit cards
@@ -88,10 +93,7 @@ def create_credit_card(request, username):
     except User.DoesNotExist:
         return Response({"error": "User not found"}, status=status.HTTP_404_NOT_FOUND)
     
-    data = request.data.copy()
-    data['user'] = user.id
-    
-    serializer = CreditCardSerializer(data=data)
+    serializer = CreditCardSerializer(data=request.data)
     if serializer.is_valid():
         serializer.save(user=user)
         return Response(serializer.data, status=status.HTTP_201_CREATED)

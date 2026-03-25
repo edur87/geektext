@@ -1,17 +1,41 @@
 from rest_framework import serializers
+from django.utils import timezone
 from .models import User, CreditCard
 
 
 class CreditCardSerializer(serializers.ModelSerializer):
     """Serializer for Credit Card model"""
+    masked_card_number = serializers.CharField(read_only=True)
     
     class Meta:
         model = CreditCard
-        fields = ['id', 'card_number', 'cardholder_name', 'expiration_date', 'cvv', 'is_default', 'created_at', 'updated_at']
+        fields = ['id', 'card_number', 'masked_card_number', 'cardholder_name', 'expiration_date', 'cvv', 'is_default', 'created_at', 'updated_at']
         extra_kwargs = {
             'card_number': {'write_only': True},
             'cvv': {'write_only': True},
         }
+
+    def validate_expiration_date(self, value):
+        if len(value) != 5 or value[2] != '/':
+            raise serializers.ValidationError("Expiration date must be in MM/YY format.")
+
+        month_part, year_part = value.split('/')
+        if not (month_part.isdigit() and year_part.isdigit()):
+            raise serializers.ValidationError("Expiration date must be in MM/YY format.")
+
+        month = int(month_part)
+        if month < 1 or month > 12:
+            raise serializers.ValidationError("Expiration month must be between 01 and 12.")
+
+        now = timezone.now()
+        current_year = now.year % 100
+        current_month = now.month
+        year = int(year_part)
+
+        if year < current_year or (year == current_year and month < current_month):
+            raise serializers.ValidationError("Expiration date cannot be in the past.")
+
+        return value
 
 
 class UserSerializer(serializers.ModelSerializer):
