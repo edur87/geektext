@@ -5,6 +5,7 @@ from django.shortcuts import get_object_or_404
 from rest_framework import status, permissions
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from cart.models import CartItem
 
 from .models import Wishlist, WishlistItem
 from .serializers import (
@@ -48,7 +49,7 @@ class WishlistItemsView(APIView):
 
     def get(self, request, wishlist_id):
         wishlist = self.get_wishlist(request, wishlist_id)
-        items = WishlistItem.objects.filter(wishlist=wishlist)
+        items = WishlistItem.objects.select_related("book").filter(wishlist=wishlist)
         return Response(WishlistItemSerializer(items, many=True).data)
 
     def post(self, request, wishlist_id):
@@ -57,23 +58,27 @@ class WishlistItemsView(APIView):
         serializer = WishlistItemCreateSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
 
-        book_id = serializer.validated_data["book_id"]
+        from books.models import Book
+
+        book = get_object_or_404(Book, id=serializer.validated_data["book_id"])
 
         item, created = WishlistItem.objects.get_or_create(
-            wishlist=wishlist,
-            book_id=book_id,
+        wishlist=wishlist,
+        book=book,
         )
 
         if not created:
             return Response(
                 {"detail": "Book already in wishlist."},
-                status=status.HTTP_200_OK,
+                status=status.HTTP_409_CONFLICT,
             )
 
         return Response(
             WishlistItemSerializer(item).data,
             status=status.HTTP_201_CREATED,
         )
+
+
 
 
 class WishlistItemDeleteView(APIView):
@@ -98,4 +103,55 @@ class WishlistItemDeleteView(APIView):
             )
 
         item.delete()
+
+        return Response(
+            {"message": "Book deleted from wishlist."},
+            status=status.HTTP_200_OK,
+        )
+
+
+class WishlistItemMoveToCartView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def post(self, request, wishlist_id, book_id):
+        wishlist = get_object_or_404(
+            Wishlist,
+            id=wishlist_id,
+            user=request.user,
+        )
+
+        item = WishlistItem.objects.filter(
+            wishlist=wishlist,
+            book_id=book_id,
+        ).first()
+
+        if not item:
+            return Response(
+                {"detail": "Not found."},
+                status=status.HTTP_404_NOT_FOUND,
+            )
+
+        CartItem.objects.get_or_create(
+            user=request.user,
+            book=item.book,
+        )
+
+        item.delete()
+
+        return Response(
+            {"message": "Book moved from wishlist to cart."},
+            status=status.HTTP_200_OK,
+        )
+    
+class WishlistDeleteView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+    
+    def delete(self, request, wishlist_id):
+        wishlist = get_object_or_404(
+            Wishlist,
+            id=wishlist_id,
+            user=request.user,
+        )
+    
+        wishlist.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
