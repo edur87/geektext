@@ -2,7 +2,7 @@
 
 ## 1. Install the Essentials
 
-###Download Brew on their [Brew website](https://brew.sh)
+### Download Brew on their [Brew website](https://brew.sh)
 
 ### Python
 
@@ -10,7 +10,9 @@
 *python3 --version*
 *pip3 --version*
 
-###Git
+
+
+### Git
 *git --version*
 
 **if _missing_**
@@ -19,8 +21,10 @@
 
 ## 2. Create a branch + Virtual environment
 
-**Create a branch [here](https://github.com/edur87/geektext)
-*Open branch with code editor of choice and run these code below * **VS Code (Reccomended)**
+**Create a branch [here](https://github.com/edur87/geektext)**
+
+
+*Open branch with code editor of choice and run these code below* **VS Code (Reccomended)**
 
 *python3 -m venv .venv*
 *source .venv/bin/activate*
