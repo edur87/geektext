@@ -39,11 +39,14 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
+    'rest_framework.authtoken',
     'api',
     'reviews',
     'books',
     'shopping_cart',
     
+    'cart',
+    'wishlist',
 ]
 
 MIDDLEWARE = [
@@ -85,11 +88,14 @@ WSGI_APPLICATION = 'config.wsgi.application'
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql",
-        "NAME": "geektext",
-        "USER": "geekuser",
-        "PASSWORD": "geekpass",
-        "HOST": "127.0.0.1",
+        "NAME": "neondb",
+        "USER": "neondb_owner",
+        "PASSWORD": "npg_KUD5QP1gtpNx",
+        "HOST": "ep-aged-lake-aihl7q55-pooler.c-4.us-east-1.aws.neon.tech",
         "PORT": "5432",
+        "OPTIONS": {
+            "sslmode": "require",
+        },
     }
 }
 DATABASE_URL = os.getenv("DATABASE_URL")
@@ -140,10 +146,19 @@ STATIC_URL = 'static/'
 REST_FRAMEWORK = {
     "DEFAULT_RENDERER_CLASSES": [
         "rest_framework.renderers.JSONRenderer",
-    ]
+        "rest_framework.renderers.BrowsableAPIRenderer",
+    ],
+    "DEFAULT_AUTHENTICATION_CLASSES": [
+        "rest_framework.authentication.SessionAuthentication",
+        "rest_framework.authentication.TokenAuthentication",
+    ],
+    "DEFAULT_PERMISSION_CLASSES": [
+        "rest_framework.permissions.IsAuthenticated",
+    ],
 }
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+LOGIN_REDIRECT_URL = '/api/wishlists/'
