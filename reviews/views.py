@@ -3,6 +3,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework import status
 from django.shortcuts import get_object_or_404
+from django.db.models import Avg, Count
 
 from .models import Comment, Review
 from .serializers import ReviewSerializer
@@ -71,3 +72,24 @@ def create_review(request):
         )
 
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(["GET"])
+def get_book_average_rating(request, book_id):
+    book = get_object_or_404(Book, id=book_id)
+
+    stats = Review.objects.filter(book=book).aggregate(
+        average_rating=Avg("rating"),
+        review_count=Count("id")
+    )
+
+    average_rating = stats["average_rating"]
+    review_count = stats["review_count"]
+
+    return Response(
+        {
+            "book_id": book.id,
+            "average_rating": round(average_rating, 2) if average_rating is not None else None,
+            "review_count": review_count
+        },
+        status=status.HTTP_200_OK
+    )
