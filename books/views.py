@@ -1,6 +1,7 @@
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from .models import Book
+from decimal import Decimal
 
 @api_view(['GET'])
 def book_list(request):
@@ -33,6 +34,8 @@ def book_list(request):
             'genre': book.genre,
             'copies_sold': book.copies_sold,
             'rating': book.rating,
+            'publisher': book.publisher,
+            'price': book.price,
         })
     
     return Response(book_data)
@@ -54,6 +57,8 @@ def book_detail(request, pk):
         'genre': book.genre,
         'copies_sold': book.copies_sold,
         'rating': book.rating,
+        'publisher': book.publisher,
+        'price': book.price,
     }
     
     return Response(book_data)
@@ -74,6 +79,35 @@ def top_sellers(request):
             'genre': book.genre,
             'copies_sold': book.copies_sold,
             'rating': book.rating,
+            'publisher': book.publisher,
+            'price': book.price,
         })
     
     return Response(book_data)
+
+@api_view(['PATCH'])
+def discount_by_publisher(request):
+    publisher = request.data.get('publisher')
+    discount_percent = request.data.get('discount_percent')
+
+    if not publisher or discount_percent is None:
+        return Response({'error': 'publisher and discount_percent are required'}, status=400)
+
+    try:
+        discount_percent = Decimal(str(discount_percent))
+    except:
+        return Response({'error': 'Invalid discount_percent'}, status=400)
+
+    if discount_percent < 0 or discount_percent > 100:
+        return Response({'error': 'discount_percent must be between 0 and 100'}, status=400)
+
+    books = Book.objects.filter(publisher__iexact=publisher)
+
+    if not books.exists():
+        return Response({'error': 'No books found for this publisher'}, status=404)
+
+    for book in books:
+        book.price = book.price * (1 - discount_percent / 100)
+        book.save()
+
+    return Response({'message': f'Discount applied to {books.count()} books by {publisher}'})

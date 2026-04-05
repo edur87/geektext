@@ -12,6 +12,10 @@ class Book(models.Model):
     copies_sold = models.PositiveIntegerField(default=0)
     rating = models.DecimalField(max_digits=3, decimal_places=2, default=0.00)
 
+    # Sprint 5 new fields
+    publisher = models.CharField(max_length=255, blank=True)
+    price = models.DecimalField(max_digits=6, decimal_places=2, default=0.00)
+
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
