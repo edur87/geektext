@@ -1,0 +1,10 @@
+<h2>Add comment for: {{ book.title }}</h2>
+
+<form method="post">
+  {% csrf_token %}
+  <textarea name="comment" rows="4" cols="60" placeholder="Write your comment..."></textarea>
+  <br />
+  <button type="submit">Post comment</button>
+</form>
+
+<a href="{% url 'book_detail' book.id %}">Back to book</a>

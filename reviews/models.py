@@ -19,3 +19,16 @@ class Review(models.Model):
         ]
         ordering = ["-created_at"]
 
+class Comment(models.Model):
+    book = models.ForeignKey("books.Book", on_delete=models.CASCADE, related_name="comments")
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="book_comments")
+
+    comment = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["-created_at"]
+
+    def __str__(self):
+        return f"{self.user} on {self.book}"
+

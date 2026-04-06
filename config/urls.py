@@ -23,5 +23,6 @@ urlpatterns = [
     path("", include("books.urls")),
     path("api/", include("wishlist.urls")),
     path("api-auth/", include("rest_framework.urls")),
+    path("api/", include("reviews.urls")),
 
 ]
