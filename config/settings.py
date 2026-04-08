@@ -9,7 +9,10 @@ https://docs.djangoproject.com/en/4.2/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.2/ref/settings/
 """
+<<<<<<< HEAD
 
+=======
+>>>>>>> cc45dd3fb51740380b68935915a846b6af86b7d2
 import os
 import dj_database_url
 from pathlib import Path
@@ -44,6 +47,8 @@ INSTALLED_APPS = [
     'api',
     'reviews',
     'books',
+    'shopping_cart',
+    
     'cart',
     'wishlist',
 ]
@@ -99,16 +104,13 @@ DATABASES = {
 }
 DATABASE_URL = os.getenv("DATABASE_URL")
 
+
 if DATABASE_URL:
     DATABASES["default"] = dj_database_url.config(
         default=DATABASE_URL,
         conn_max_age=600,
         ssl_require=True,
     )
-
-
-
-
 
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
