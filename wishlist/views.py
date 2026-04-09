@@ -5,7 +5,7 @@ from django.shortcuts import get_object_or_404
 from rest_framework import status, permissions
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from cart.models import CartItem
+from shopping_cart.models import ShoppingCart
 
 from .models import Wishlist, WishlistItem
 from .serializers import (
