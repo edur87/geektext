@@ -1,10 +1,9 @@
-from django.shortcuts import render
-
-# Create your views here.
 from django.shortcuts import get_object_or_404
-from rest_framework import status, permissions
+from rest_framework import permissions, status
 from rest_framework.response import Response
 from rest_framework.views import APIView
+
+from books.models import Book
 from shopping_cart.models import ShoppingCart
 
 from .models import Wishlist, WishlistItem
@@ -58,13 +57,11 @@ class WishlistItemsView(APIView):
         serializer = WishlistItemCreateSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
 
-        from books.models import Book
-
         book = get_object_or_404(Book, id=serializer.validated_data["book_id"])
 
         item, created = WishlistItem.objects.get_or_create(
-        wishlist=wishlist,
-        book=book,
+            wishlist=wishlist,
+            book=book,
         )
 
         if not created:
@@ -79,8 +76,6 @@ class WishlistItemsView(APIView):
         )
 
 
-
-
 class WishlistItemDeleteView(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
@@ -91,16 +86,11 @@ class WishlistItemDeleteView(APIView):
             user=request.user,
         )
 
-        item = WishlistItem.objects.filter(
+        item = get_object_or_404(
+            WishlistItem,
             wishlist=wishlist,
             book_id=book_id,
-        ).first()
-
-        if not item:
-            return Response(
-                {"detail": "Not found."},
-                status=status.HTTP_404_NOT_FOUND,
-            )
+        )
 
         item.delete()
 
@@ -120,21 +110,20 @@ class WishlistItemMoveToCartView(APIView):
             user=request.user,
         )
 
-        item = WishlistItem.objects.filter(
+        item = get_object_or_404(
+            WishlistItem,
             wishlist=wishlist,
             book_id=book_id,
-        ).first()
+        )
 
-        if not item:
-            return Response(
-                {"detail": "Not found."},
-                status=status.HTTP_404_NOT_FOUND,
-            )
-
-        CartItem.objects.get_or_create(
+        cart_item, created = ShoppingCart.objects.get_or_create(
             user=request.user,
             book=item.book,
         )
+
+        if not created:
+            cart_item.quantity += 1
+            cart_item.save()
 
         item.delete()
 
@@ -142,16 +131,17 @@ class WishlistItemMoveToCartView(APIView):
             {"message": "Book moved from wishlist to cart."},
             status=status.HTTP_200_OK,
         )
-    
+
+
 class WishlistDeleteView(APIView):
     permission_classes = [permissions.IsAuthenticated]
-    
+
     def delete(self, request, wishlist_id):
         wishlist = get_object_or_404(
             Wishlist,
             id=wishlist_id,
             user=request.user,
         )
-    
+
         wishlist.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
