@@ -1,6 +1,6 @@
 from rest_framework import serializers
-from .models import Wishlist, WishlistItem
 from books.models import Book
+from .models import Wishlist, WishlistItem
 
 
 class WishlistSerializer(serializers.ModelSerializer):
@@ -12,7 +12,17 @@ class WishlistSerializer(serializers.ModelSerializer):
 class WishlistBookSerializer(serializers.ModelSerializer):
     class Meta:
         model = Book
-        fields = ["id", "title", "author", "isbn", "published_year"]
+        fields = [
+            "id",
+            "title",
+            "author",
+            "isbn",
+            "published_year",
+            "genre",
+            "publisher",
+            "price",
+            "rating",
+        ]
 
 
 class WishlistItemSerializer(serializers.ModelSerializer):
